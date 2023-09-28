@@ -1,0 +1,4 @@
+Pillow==10.0.1
+numpy==1.26.0
+brisque==0.0.15
+scikit-image==0.21.0
