@@ -6,14 +6,16 @@ from enhancement_pipeline import EnhancementPipeline
 
 def main():
     # Execute the Enhancement Pipeline
-    pipeline = EnhancementPipeline('data\\raw_dataset',
-                                   'data\\resized_images',
-                                   'data\\enhanced_images')
+    base_data_dir = os.path.join('..', '..', '..', 'data')
+    pipeline = EnhancementPipeline(os.path.join(base_data_dir, 'raw_dataset'),
+                                   os.path.join(base_data_dir, 'resized_images'),
+                                   os.path.join(base_data_dir, 'enhanced_images'))
     evaluation_results = pipeline.execute()
+    # evaluation_results, best_enhanced_image, worst_enhanced_image, average_enhanced_image = pipeline.execute()
 
     # Create a timestamped CSV file to store the results
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    results_folder = '../../../results/brisque_scores'
+    results_folder = os.path.join('..', '..', '..', 'results', 'brisque_scores')
     os.makedirs(results_folder, exist_ok=True)
     results_file = os.path.join(results_folder, f'evaluation_results_{timestamp}.csv')
 
@@ -25,6 +27,13 @@ def main():
 
         for result in evaluation_results:
             writer.writerow(result)
+
+    # Save the best, worst and average enhanced images to the visualization_examples folder in the results folder
+    visualization_examples_folder = os.path.join('..', '..', '..', 'results', 'visualization_examples')
+    os.makedirs(visualization_examples_folder, exist_ok=True)
+    # best_enhanced_image.save(os.path.join(visualization_examples_folder, f'best_enhanced_image_{timestamp}.jpg'))
+    # worst_enhanced_image.save(os.path.join(visualization_examples_folder, f'worst_enhanced_image_{timestamp}.jpg'))
+    # average_enhanced_image.save(os.path.join(visualization_examples_folder, f'average_enhanced_image_{timestamp}.jpg'))
 
     print(f"Results have been saved to {results_file}")
 
