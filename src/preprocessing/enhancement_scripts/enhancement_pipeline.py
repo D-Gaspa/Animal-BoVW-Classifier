@@ -20,18 +20,21 @@ class BrisqueEvaluator:
         total_raw_score = 0
         total_enhanced_score = 0
         total_images = 0
+        negative_raw_score_count = 0
+        negative_enhanced_score_count = 0
 
+        # Iterate through each class directory
         for class_name in os.listdir(self.enhanced_images_path):
             enhanced_class_directory = os.path.join(self.enhanced_images_path, class_name)
             raw_class_directory = os.path.join(self.raw_images_path, class_name)
 
             all_images = os.listdir(enhanced_class_directory)
-            selected_images = random.sample(all_images, 10)  # Selecting 10 images from each class
+            # selected_images = random.sample(all_images, 10)  # Selecting 10 images from each class
+            selected_images = all_images
 
+            # Iterate through each image in the class directory
             for image_name in selected_images:
                 try:
-                    total_images += 1
-
                     enhanced_image_path = os.path.join(enhanced_class_directory, image_name)
                     raw_image_path = os.path.join(raw_class_directory, image_name)
 
@@ -47,11 +50,22 @@ class BrisqueEvaluator:
                     enhanced_score = obj.score(enhanced_image)
                     raw_score = obj.score(raw_image)
 
+                    # If the score is negative, we mark it as "NA"
+                    if raw_score < 0 or enhanced_score < 0:
+                        negative_raw_score_count += 1
+                        negative_enhanced_score_count += 1
+                        print(f"Negative score detected. Raw Score: {raw_score}, Enhanced Score: {enhanced_score}")
+                        evaluation_results.append((class_name, image_name, 'NA', 'NA', 'NA'))
+                        continue
+
+                    total_images += 1
                     total_raw_score += raw_score
                     total_enhanced_score += enhanced_score
 
-                    improvement_percentage = (enhanced_score - raw_score) / abs(raw_score) * 100 \
-                        if raw_score != 0 else 0
+                    # Calculate the improvement percentage; if the enhanced score is lower than the raw score,
+                    # there was an improvement in quality
+                    improvement_percentage = ((raw_score - enhanced_score) / enhanced_score * 100) \
+                        if enhanced_score != 0 else 0  # Avoid division by zero
 
                     evaluation_results.append((class_name, image_name, raw_score, enhanced_score,
                                                improvement_percentage))
@@ -62,16 +76,21 @@ class BrisqueEvaluator:
                 except Exception as e:
                     print(f"Error processing image {image_name} in class {class_name}: {e}")
 
+        # Calculate the average scores for the entire dataset
         average_raw_score = total_raw_score / total_images if total_images != 0 else 0
         average_enhanced_score = total_enhanced_score / total_images if total_images != 0 else 0
         average_improvement_percentage = ((average_enhanced_score - average_raw_score) / abs(average_raw_score) * 100) \
             if average_raw_score != 0 else 0
 
+        # Append the average scores to the evaluation results
         evaluation_results.append(("Average", "N/A", average_raw_score, average_enhanced_score,
                                    average_improvement_percentage))
 
         print(f"Average Raw Score: {average_raw_score}, Average Enhanced Score: {average_enhanced_score}, "
               f"Average Improvement Percentage: {average_improvement_percentage}")
+
+        print(f"Negative Raw Score Count: {negative_raw_score_count}")
+        print(f"Negative Enhanced Score Count: {negative_enhanced_score_count}")
 
         return evaluation_results
 
@@ -117,6 +136,5 @@ class EnhancementPipeline:
 
     def _brisque_evaluation(self):
         brisque_evaluator = BrisqueEvaluator(self.raw_dataset_path, self.enhanced_images_path)
-        evaluation_results = brisque_evaluator.evaluate()
 
-        return evaluation_results
+        return brisque_evaluator.evaluate()
