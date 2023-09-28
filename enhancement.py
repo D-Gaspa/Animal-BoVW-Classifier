@@ -5,6 +5,7 @@ from brisque import BRISQUE
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 import glob
 
 print("Image Enchancement:\n")
@@ -52,14 +53,17 @@ def BrisqueOriginal():
     avg = np.sum(scoreBrisqueVal) / 50
     return avg
 
-OrBrisqueResAVG = BrisqueOriginal()
-print(f"The BRISQUE average of 50 random images is: {OrBrisqueResAVG}")
+#OrBrisqueResAVG = BrisqueOriginal()
+#print(f"The BRISQUE average of 50 random images is: {OrBrisqueResAVG}")
 
 dspath = "./data/raw_dataset"
 training_data = []
 t = 1
 for imgFile in glob.iglob(f"{dspath}/*/*"):
     img1 = cv.imread(imgFile)
+    print(f"{imgFile} shape: {img1.shape}")
+    
+    """
     img1 = cv.cvtColor(img1, cv.COLOR_BGR2RGB)
     img = resize(img1, (1500,1500))
     score1 = BrisqueVal.score(img1)
@@ -77,5 +81,5 @@ for imgFile in glob.iglob(f"{dspath}/*/*"):
         plt.imshow(img)
         plt.show()
         break;
-    
+    """
 #training_data = np.array(training_data)

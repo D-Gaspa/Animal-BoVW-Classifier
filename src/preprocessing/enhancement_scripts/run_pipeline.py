@@ -6,9 +6,9 @@ from enhancement_pipeline import EnhancementPipeline
 
 def main():
     # Execute the Enhancement Pipeline
-    pipeline = EnhancementPipeline('../../../data/raw_dataset',
-                                   '../../../data/resized_images',
-                                   '../../../data/enhanced_images')
+    pipeline = EnhancementPipeline('data\\raw_dataset',
+                                   'data\\resized_images',
+                                   'data\\enhanced_images')
     evaluation_results = pipeline.execute()
 
     # Create a timestamped CSV file to store the results
