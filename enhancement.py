@@ -60,8 +60,11 @@ dspath = "./data/raw_dataset"
 training_data = []
 t = 1
 for imgFile in glob.iglob(f"{dspath}/*/*"):
-    img1 = cv.imread(imgFile)
-    print(f"{imgFile} shape: {img1.shape}")
+    if t ==1:
+        img1 = cv.imread(imgFile)
+        print(f"{imgFile} array: {img1}")
+        t = t + 1
+        break
     
     """
     img1 = cv.cvtColor(img1, cv.COLOR_BGR2RGB)
