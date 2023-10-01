@@ -30,11 +30,11 @@ def imgarr_enh(image):
     enhance = adjust_gamma(enhance, gamma = 1.4, gain= 1)
     #enhance = adjust_log(enhance, gain= 1)
     enhance = adjust_sigmoid(enhance, cutoff= 0.3, gain = 5)
-    #enhance = unsharp_mask(enhance, radius=20, amount = 1.0)
-    #enhance = gray2rgb(enhance)
-    #kernel = np.array(([1, -2, 1], [-2, 4, -2], [1, -2, 1]), np.float32) / 9
+    #enhance = cv.GaussianBlur(enhance, (3,3), 0)
+    #kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
     #flipped_kernel = np.flip(kernel, axis = -1)
-    #unsharp_masking = cv.filter2D(image, -1, flipped_kernel)
+    #enhance = cv.filter2D(enhance, -1, flipped_kernel)
+
     return enhance
 
 
@@ -53,6 +53,7 @@ class QualityImprover:
             # Apply improvements here
             #image = _adjust_contrast(image, 1.5)
             #image = _reduce_noise(image, 3)
+            image = image.filter(ImageFilter.UnsharpMask(1.7, 3, 2))
             image = _enhance_sharpness(image, 2.0)
             image = _adjust_brightness(image, 0.92)
             image = imgarr_enh(np.array(image))

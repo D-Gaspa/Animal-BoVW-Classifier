@@ -29,8 +29,8 @@ class BrisqueEvaluator:
             raw_class_directory = os.path.join(self.raw_images_path, class_name)
 
             all_images = os.listdir(enhanced_class_directory)
-            # selected_images = random.sample(all_images, 10)  # Selecting 10 images from each class
-            selected_images = all_images
+            #selected_images = random.sample(all_images, 10)  # Selecting 10 images from each class
+            selected_images = all_images #random.sample(all_images, 10)
 
             # Iterate through each image in the class directory
             for image_name in selected_images:
