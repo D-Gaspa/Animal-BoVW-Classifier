@@ -11,6 +11,9 @@ def _resize_image(image_path, output_path, min_size):
 
         # check if the image is already bigger than the minimum size
         if width > min_size and height > min_size:
+            save_path = os.path.join(output_path, os.path.basename(image_path))
+            image.save(save_path)
+            print(f"Saving to: {save_path}")
             return
 
         if width < height:
@@ -25,8 +28,9 @@ def _resize_image(image_path, output_path, min_size):
 
         # save the resized image
         save_path = os.path.join(output_path, os.path.basename(image_path))
-        print(f"Saving to: {save_path}")
         resized_image.save(save_path)
+        print(f"Saving to: {save_path}")
+
     except Exception as e:
         print(f"Error resizing image {image_path}: {e}")
 

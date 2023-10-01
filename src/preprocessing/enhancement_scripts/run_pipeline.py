@@ -6,15 +6,15 @@ from enhancement_pipeline import EnhancementPipeline
 
 def main():
     # Execute the Enhancement Pipeline
-    #base_data_dir = os.path.join('..', '..', '..', 'data')
-    """
+    base_data_dir = os.path.join('..', '..', '..', 'data')
     pipeline = EnhancementPipeline(os.path.join(base_data_dir, 'raw_dataset'),
                                    os.path.join(base_data_dir, 'resized_images'),
                                    os.path.join(base_data_dir, 'enhanced_images'))
-    """                               
+    '''
     pipeline = EnhancementPipeline(os.path.join('data\\raw_dataset'),
                                    os.path.join('data\\resized_images'),
                                    os.path.join('data\\enhanced_images'))
+    '''
     evaluation_results = pipeline.execute()
     # evaluation_results, best_enhanced_image, worst_enhanced_image, average_enhanced_image = pipeline.execute()
 
@@ -27,9 +27,9 @@ def main():
     # Write the BRISQUE scores and improvement percentages to a CSV file
     with open(results_file, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Class Name', 'Image Name', 'Raw BRISQUE Score',
-                         'Enhanced BRISQUE Score', 'Improvement Percentage'])
-
+        writer.writerow(['Class Name', 'Image Name', 'Raw BRISQUE Score', 'Resized BRISQUE Score'
+                         'Enhanced BRISQUE Score', 'Improvement Percentage (Raw-Resized)',
+                         'Improvement Percentage (Resized-Enhanced)', 'Improvement Percentage (Raw-Enhanced)'])
         for result in evaluation_results:
             writer.writerow(result)
 
