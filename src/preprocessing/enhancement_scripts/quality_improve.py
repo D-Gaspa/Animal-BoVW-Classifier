@@ -1,11 +1,9 @@
-from PIL import Image, ImageEnhance, ImageFilter
 import os
-import numpy as np
 import cv2 as cv
-from scipy import ndimage
-from skimage.morphology import disk, ball
-from skimage.exposure import adjust_log, adjust_gamma, adjust_sigmoid
-from skimage.filters.rank import noise_filter
+import numpy as np
+from PIL import Image, ImageEnhance, ImageFilter
+from skimage.exposure import adjust_gamma, adjust_sigmoid
+
 
 def _adjust_brightness(image, factor):
     enhancer = ImageEnhance.Brightness(image)
@@ -25,16 +23,17 @@ def _adjust_contrast(image, factor):
     enhancer = ImageEnhance.Contrast(image)
     return enhancer.enhance(factor)
 
+
 def imgarr_enh(image):
     enhance = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-    enhance = adjust_gamma(enhance, gamma = 1.4, gain= 1)
-    #enhance = adjust_log(enhance, gain= 1)
-    enhance = adjust_sigmoid(enhance, cutoff= 0.3, gain = 5)
-    #enhance = cv.GaussianBlur(enhance, (3,3), 0)
-    #kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
-    #flipped_kernel = np.flip(kernel, axis = -1)
-    #enhance = cv.filter2D(enhance, -1, flipped_kernel)
-
+    enhance = adjust_gamma(enhance, gamma=1.4, gain=1)
+    # enhance = adjust_log(enhance, gain= 1)
+    enhance = adjust_sigmoid(enhance, cutoff=0.3, gain=5)
+    # enhance = unsharp_mask(enhance, radius=20, amount = 1.0)
+    # enhance = gray2rgb(enhance)
+    # kernel = np.array(([1, -2, 1], [-2, 4, -2], [1, -2, 1]), np.float32) / 9
+    # flipped_kernel = np.flip(kernel, axis = -1)
+    # unsharp_masking = cv.filter2D(image, -1, flipped_kernel)
     return enhance
 
 
@@ -51,16 +50,15 @@ class QualityImprover:
             image = Image.open(image_path)
 
             # Apply improvements here
-            #image = _adjust_contrast(image, 1.5)
-            #image = _reduce_noise(image, 3)
-            image = image.filter(ImageFilter.UnsharpMask(1.7, 3, 2))
+            # image = _adjust_contrast(image, 1.5)
+            # image = _reduce_noise(image, 3)
             image = _enhance_sharpness(image, 2.0)
             image = _adjust_brightness(image, 0.92)
             image = imgarr_enh(np.array(image))
 
             # Save the improved image
             cv.imwrite(os.path.join(self.output_directory, image_name), image)
-            #image.save(os.path.join(self.output_directory, image_name))
+            # image.save(os.path.join(self.output_directory, image_name))
 
             # Print the name of the saved image
             print(f"Saved improved image: {image_name}")
