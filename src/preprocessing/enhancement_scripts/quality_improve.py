@@ -1,8 +1,21 @@
-import os
-import cv2 as cv
-import numpy as np
 from PIL import Image, ImageEnhance, ImageFilter
+import os
+import numpy as np
+import cv2 as cv
 from skimage.exposure import adjust_gamma, adjust_sigmoid
+
+
+def needs_brightness_adjustment(image):
+    # Convert the image to HSV
+    hsv_image = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+
+    # Calculate the brightness of the image
+    brightness = np.mean(hsv_image[:, :, 2])
+
+    # If the brightness is less than 100, the image needs to be brightened
+    if brightness < 100:
+        return True
+    return False
 
 
 def _adjust_brightness(image, factor):
@@ -10,9 +23,35 @@ def _adjust_brightness(image, factor):
     return enhancer.enhance(factor)
 
 
+def needs_sharpness_enhancement(image):
+    # Convert the image to grayscale
+    gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+
+    # Calculate the Laplacian of the image
+    laplacian = cv.Laplacian(gray_image, -1).var()
+
+    # If the Laplacian is less than 100, the image needs to be sharpened
+    if laplacian < 100:
+        return True
+    return False
+
+
 def _enhance_sharpness(image, factor):
     enhancer = ImageEnhance.Sharpness(image)
     return enhancer.enhance(factor)
+
+
+def needs_noise_reduction(image):
+    # Convert the image to grayscale
+    gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+
+    # Calculate the Laplacian of the image
+    laplacian = cv.Laplacian(gray_image, -1).var()
+
+    # If the Laplacian is greater than 100, the image needs to have noise reduced
+    if laplacian > 100:
+        return True
+    return False
 
 
 def _reduce_noise(image, factor):
@@ -24,16 +63,16 @@ def _adjust_contrast(image, factor):
     return enhancer.enhance(factor)
 
 
-def imgarr_enh(image):
+def img_array_enh(image):
     enhance = cv.cvtColor(image, cv.COLOR_BGR2RGB)
     enhance = adjust_gamma(enhance, gamma=1.4, gain=1)
     # enhance = adjust_log(enhance, gain= 1)
     enhance = adjust_sigmoid(enhance, cutoff=0.3, gain=5)
-    # enhance = unsharp_mask(enhance, radius=20, amount = 1.0)
-    # enhance = gray2rgb(enhance)
-    # kernel = np.array(([1, -2, 1], [-2, 4, -2], [1, -2, 1]), np.float32) / 9
+    # enhance = cv.GaussianBlur(enhance, (3,3), 0)
+    # kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
     # flipped_kernel = np.flip(kernel, axis = -1)
-    # unsharp_masking = cv.filter2D(image, -1, flipped_kernel)
+    # enhance = cv.filter2D(enhance, -1, flipped_kernel)
+
     return enhance
 
 
@@ -50,11 +89,18 @@ class QualityImprover:
             image = Image.open(image_path)
 
             # Apply improvements here
-            # image = _adjust_contrast(image, 1.5)
-            # image = _reduce_noise(image, 3)
+
+            image = image.filter(ImageFilter.UnsharpMask(1.7, 3, 2))
+
             image = _enhance_sharpness(image, 2.0)
+
             image = _adjust_brightness(image, 0.92)
-            image = imgarr_enh(np.array(image))
+
+            # image = _adjust_contrast(image, 1.2)
+
+            # image = _reduce_noise(image, 3)
+
+            image = img_array_enh(np.array(image))
 
             # Save the improved image
             cv.imwrite(os.path.join(self.output_directory, image_name), image)
