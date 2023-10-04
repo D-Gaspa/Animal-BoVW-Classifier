@@ -8,10 +8,12 @@ from pathlib import Path
 data_path = f'{Path.cwd()}\\data\\enhanced_images'
 categories = []
 data = []
+labels = []
 
 
 def prep_data():
-    for class_name in os.listdir(data_path):
+    global labels
+    for categories_index, class_name in enumerate(os.listdir(data_path)):
         categories.append(class_name)
         image_path = os.path.join(data_path, class_name)
         for image_file in os.listdir(image_path):
@@ -19,8 +21,12 @@ def prep_data():
             image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
             image = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
             data.append(image)
+            labels.append(categories_index)
+            
+    labels = np.asarray(labels)
         
 
 prep_data()
-test = dict()
+print(labels)
+
 
