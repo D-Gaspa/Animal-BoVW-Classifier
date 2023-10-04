@@ -6,13 +6,13 @@ from pathlib import Path
 
 
 data_path = f'{Path.cwd()}\\data\\enhanced_images'
-labels = []
+categories = []
 data = []
 
 
 def prep_data():
     for class_name in os.listdir(data_path):
-        labels.append(class_name)
+        categories.append(class_name)
         image_path = os.path.join(data_path, class_name)
         for image_file in os.listdir(image_path):
             image = cv.imread(os.path.join(image_path, image_file))
@@ -22,5 +22,5 @@ def prep_data():
         
 
 prep_data()
-
+test = dict()
 
