@@ -1,11 +1,12 @@
 import os
 import csv
 from datetime import datetime
-from enhancement_pipeline import EnhancementPipeline
+from .enhancement_pipeline import EnhancementPipeline
 
 
-def main():
+def enhancer():
     # Execute the Enhancement Pipeline
+    '''
     base_data_dir = os.path.join('..', '..', '..', 'data')
     pipeline = EnhancementPipeline(os.path.join(base_data_dir, 'raw_dataset'),
                                    os.path.join(base_data_dir, 'resized_images'),
@@ -14,7 +15,7 @@ def main():
     pipeline = EnhancementPipeline(os.path.join('data\\raw_dataset'),
                                    os.path.join('data\\resized_images'),
                                    os.path.join('data\\enhanced_images'))
-    '''
+    
     evaluation_results = pipeline.execute()
     # evaluation_results, best_enhanced_image, worst_enhanced_image, average_enhanced_image = pipeline.execute()
 
