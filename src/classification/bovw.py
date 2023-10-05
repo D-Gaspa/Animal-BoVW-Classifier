@@ -22,19 +22,22 @@ def prep_data():
             image = cv.imread(os.path.join(image_path, image_file))
             image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
             image = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
-            data.append(image)
+            data.append(image.flatten())
             labels.append(categories_index)
-            
+prep_data()         
 data = np.asarray(data)  
-labels = np.asarray(labels)
+#labels = np.asarray(labels)
+"""
 X_train, X_test, Y_train, Y_test = train_test_split(data, labels, test_size= 0.3, train_size= 0.7, shuffle= True, random_state = 35, stratify=labels)
 
 orb = cv.ORB.create()
 
-kp, des = orb.detectAndCompute()
+for img in X_train:
+    kp, des = orb.detectAndCompute(X_test, None)
 
 for d in des:
     descriptors.append(d)
-print(labels)
+"""
+print(data)
 
-
+#print(des)
