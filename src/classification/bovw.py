@@ -3,12 +3,14 @@ import cv2 as cv
 import os
 import pprint
 from pathlib import Path
+from sklearn.model_selection import train_test_split
 
 
 data_path = f'{Path.cwd()}\\data\\enhanced_images'
 categories = []
 data = []
 labels = []
+descriptors = []
 
 
 def prep_data():
@@ -23,10 +25,16 @@ def prep_data():
             data.append(image)
             labels.append(categories_index)
             
-    labels = np.asarray(labels)
-        
+data = np.asarray(data)  
+labels = np.asarray(labels)
+X_train, X_test, Y_train, Y_test = train_test_split(data, labels, test_size= 0.3, train_size= 0.7, shuffle= True, random_state = 35, stratify=labels)
 
-prep_data()
+orb = cv.ORB.create()
+
+kp, des = orb.detectAndCompute()
+
+for d in des:
+    descriptors.append(d)
 print(labels)
 
 
