@@ -1,14 +1,16 @@
 from termcolor import colored
-from preprocessing.enhancement_scripts.run_pipeline import enhancer as Enhancer
+from preprocessing.enhancement_scripts.run_pipeline import main as Enhancer
+from pathlib import Path
+import os
 
 def main():
     loop = True
-    enhance = False
+    verifyFPath = f'{Path.cwd()}\\docs\\.gitkeep'
 
     print(colored("Welcome to the Animal images enhancer & classifier", "white", attrs=['bold']))
 
     while(loop):
-        if enhance == False:
+        if os.path.exists(verifyFPath) == False:
             print(colored("\nPlease select one of the following options:", "white"))
             print(colored("\n1.Enhance Image dataset", "light_green"))
             print(colored("\n2.Classify image dataset", "red"))
@@ -22,10 +24,11 @@ def main():
         res = input()
 
         if res == '1':
-            enhance = True
+            file = open(verifyFPath, mode= 'w')
+            file.close()
             Enhancer()
         elif res == '2':
-            if enhance == False:
+            if os.path.exists(verifyFPath) == False:
                 print(colored("\nYou cannot classify images if they are not resized and enhanced before.", "red"))
             else:
                 print()
