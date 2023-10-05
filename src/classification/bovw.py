@@ -19,9 +19,10 @@ class BOVW:
         self.label_names = []
         self.label_count = 0
         self.clf = SVC()
+        self.parameters = [{'kernel': ['linear', 'rbf', 'poly', 'sigmoid', 'precomputed'], 'C': [0.1, 1, 10, 100, 1000], 'gamma': ['scale', 1, 0.1, 0.01, 0.001, 0.0001]}]
 
     def fit(self):
-        sift = cv2.SIFT.create()
+        orb = cv2.ORB.create()
         image_labels = []
         image_features = []
 
@@ -37,10 +38,12 @@ class BOVW:
 
             for img_name in os.listdir(class_path):
                 img_path = os.path.join(class_path, img_name)
-                img = cv2.imread(img_path, 0)  # read the image in grayscale
+                img = cv2.imread(img_path) 
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) # The image was transform so it can represent from bgr to rgb and then represent that rgb in grayscale
 
                 mask = np.ones_like(img, np.uint8) * 255  # creating a mask of the same size with all features included
-                kp, des = sift.detectAndCompute(img, mask)  # get key points and descriptors
+                kp, des = orb.detectAndCompute(img, mask)  # get key points and descriptors
 
                 if des is not None:  # check if descriptors are extracted
                     self.descriptor_list.append(des)
@@ -59,8 +62,7 @@ class BOVW:
 
         # Perform k-means clustering
         print("Starting K-Means Clustering")
-        k_means = MiniBatchKMeans(n_clusters=self.num_clusters, random_state=0, n_init=3)
-        k_means.fit(descriptors)
+        k_means = MiniBatchKMeans(n_clusters=self.num_clusters, random_state=0, n_init=3).fit(descriptors)
         print("K-Means Clustering complete")
 
         # Create histograms of visual words
@@ -72,21 +74,19 @@ class BOVW:
 
         # Split into training and testing data
         x_train, x_test, y_train, y_test = train_test_split(
-            image_histograms, image_labels, test_size=0.3, random_state=42)
+            image_histograms, image_labels, test_size=0.3, train_size= 0.7, random_state=35, shuffle= True, stratify= image_labels )
 
         # Hyperparameter tuning for SVM
         print("Performing Grid Search for Hyperparameter Tuning")
-        parameters = {'kernel': ('linear', 'rbf'),
-                      'C': [0.1, 1, 10],
-                      'gamma': ['scale', 1, 0.1, 0.01]}
-        clf = GridSearchCV(self.clf, parameters, cv=5)
+        grid_search = GridSearchCV(self.clf, self.parameters)
         print("Fitting the SVM")
-        clf.fit(x_train, y_train)
-        print("Best parameters found: ", clf.best_params_)
+        grid_search.fit(x_train, y_train)
+        print("Best parameters found: ", grid_search.best_params_)
+        best_trainRes = grid_search.best_estimator_
 
         # Evaluate
         print("Evaluating the SVM")
-        y_pred = clf.predict(x_test)
+        y_pred = best_trainRes.predict(x_test)
         report = classification_report(y_test, y_pred, target_names=self.label_names)
         print(report)
         cm = confusion_matrix(y_test, y_pred)
@@ -111,7 +111,7 @@ class BOVW:
         with open(f'../../results/classification_results/classification_report_{timestamp}.txt', 'w') as f:
             f.write(report)
             f.write("\nBest Parameters: ")
-            f.write(str(clf.best_params_))
+            f.write(str(grid_search.best_params_))
 
 
 if __name__ == "__main__":
