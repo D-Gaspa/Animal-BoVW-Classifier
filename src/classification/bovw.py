@@ -111,5 +111,5 @@ class BOVW:
 if __name__ == "__main__":
     os.environ['LOKY_MAX_CPU_COUNT'] = '8'
     base_data_dir = os.path.join('..', '..', 'data')
-    bovw = BOVW(os.path.join(base_data_dir, 'enhanced_images'))
+    bovw = BOVW(os.path.join(base_data_dir, 'filtered_images/sharpen-histogram_equalization-noise_reduction'))
     bovw.fit()
