@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.svm import SVC
 from sklearn.cluster import MiniBatchKMeans
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 
@@ -74,17 +74,21 @@ class BOVW:
         x_train, x_test, y_train, y_test = train_test_split(
             image_histograms, image_labels, test_size=0.3, random_state=42)
 
-        # Train the SVM
-        print("Training the SVM")
-        self.clf.fit(x_train, y_train)
-        print("SVM trained")
+        # Hyperparameter tuning for SVM
+        print("Performing Grid Search for Hyperparameter Tuning")
+        parameters = {'kernel': ('linear', 'rbf'),
+                      'C': [0.1, 1, 10],
+                      'gamma': ['scale', 1, 0.1, 0.01]}
+        clf = GridSearchCV(self.clf, parameters, cv=5)
+        print("Fitting the SVM")
+        clf.fit(x_train, y_train)
+        print("Best parameters found: ", clf.best_params_)
 
         # Evaluate
         print("Evaluating the SVM")
-        y_pred = self.clf.predict(x_test)
-        report = classification_report(y_test, y_pred, target_names=self.label_names)  # Store the report in a variable
-        print(report)  # Print the classification report
-        print("Confusion Matrix:")
+        y_pred = clf.predict(x_test)
+        report = classification_report(y_test, y_pred, target_names=self.label_names)
+        print(report)
         cm = confusion_matrix(y_test, y_pred)
 
         # Plot the confusion matrix for better visualization
@@ -106,10 +110,13 @@ class BOVW:
         # Save the classification report as a text file with the timestamp in the filename
         with open(f'../../results/classification_results/classification_report_{timestamp}.txt', 'w') as f:
             f.write(report)
+            f.write("\nBest Parameters: ")
+            f.write(str(clf.best_params_))
 
 
 if __name__ == "__main__":
     os.environ['LOKY_MAX_CPU_COUNT'] = '8'
     base_data_dir = os.path.join('..', '..', 'data')
-    bovw = BOVW(os.path.join(base_data_dir, 'filtered_images/sharpen-histogram_equalization-noise_reduction'))
+    filtered_images_folder = os.path.join(base_data_dir, 'filtered_images')
+    bovw = BOVW(os.path.join(base_data_dir, 'resized_images'))
     bovw.fit()
