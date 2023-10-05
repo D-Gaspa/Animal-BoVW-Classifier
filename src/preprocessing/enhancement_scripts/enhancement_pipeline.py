@@ -4,8 +4,8 @@ import numpy as np
 from PIL import Image
 from brisque import BRISQUE
 from skimage import color
-from size_transform import ImageEnhancer
-from quality_improve import QualityImprover
+from .size_transform import ImageEnhancer
+from .quality_improve import QualityImprover
 
 
 class BrisqueEvaluator:

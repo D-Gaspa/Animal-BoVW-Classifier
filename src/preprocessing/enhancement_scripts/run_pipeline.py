@@ -2,7 +2,7 @@ import os
 import csv
 from pathlib import Path
 from datetime import datetime
-from enhancement_pipeline import EnhancementPipeline
+from .enhancement_pipeline import EnhancementPipeline
 
 
 def main():
