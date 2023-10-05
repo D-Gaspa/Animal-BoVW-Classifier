@@ -1,12 +1,12 @@
 import os
 import csv
 from datetime import datetime
-from .enhancement_pipeline import EnhancementPipeline
+from enhancement_pipeline import EnhancementPipeline
 
 
-def enhancer():
+def main():
     # Execute the Enhancement Pipeline
-    '''
+
     base_data_dir = os.path.join('..', '..', '..', 'data')
     pipeline = EnhancementPipeline(os.path.join(base_data_dir, 'raw_dataset'),
                                    os.path.join(base_data_dir, 'resized_images'),
@@ -15,9 +15,9 @@ def enhancer():
     pipeline = EnhancementPipeline(os.path.join('data\\raw_dataset'),
                                    os.path.join('data\\resized_images'),
                                    os.path.join('data\\enhanced_images'))
+    '''
     
-    evaluation_results = pipeline.execute()
-    # evaluation_results, best_enhanced_image, worst_enhanced_image, average_enhanced_image = pipeline.execute()
+    evaluation_results, best_enhanced_image, worst_enhanced_image, average_enhanced_image = pipeline.execute()
 
     # Create a timestamped CSV file to store the results
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -37,9 +37,9 @@ def enhancer():
     # Save the best, worst and average enhanced images to the visualization_examples folder in the results folder
     visualization_examples_folder = os.path.join('..', '..', '..', 'results', 'visualization_examples')
     os.makedirs(visualization_examples_folder, exist_ok=True)
-    # best_enhanced_image.save(os.path.join(visualization_examples_folder, f'best_enhanced_image_{timestamp}.jpg'))
-    # worst_enhanced_image.save(os.path.join(visualization_examples_folder, f'worst_enhanced_image_{timestamp}.jpg'))
-    # average_enhanced_image.save(os.path.join(visualization_examples_folder, f'average_enhanced_image_{timestamp}.jpg'))
+    best_enhanced_image.save(os.path.join(visualization_examples_folder, f'best_enhanced_image_{timestamp}.jpg'))
+    worst_enhanced_image.save(os.path.join(visualization_examples_folder, f'worst_enhanced_image_{timestamp}.jpg'))
+    average_enhanced_image.save(os.path.join(visualization_examples_folder, f'average_enhanced_image_{timestamp}.jpg'))
 
     print(f"Results have been saved to {results_file}")
 

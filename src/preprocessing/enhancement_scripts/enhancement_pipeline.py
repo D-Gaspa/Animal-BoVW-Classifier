@@ -4,8 +4,8 @@ import numpy as np
 from PIL import Image
 from brisque import BRISQUE
 from skimage import color
-from .size_transform import ImageEnhancer
-from .quality_improve import QualityImprover
+from size_transform import ImageEnhancer
+from quality_improve import QualityImprover
 
 
 class BrisqueEvaluator:
@@ -14,9 +14,89 @@ class BrisqueEvaluator:
         self.resized_images_path = resized_images_path
         self.enhanced_images_path = enhanced_images_path
 
+    def evaluate_resized(self):
+        obj = BRISQUE(url=False)
+        negative_brisque_scores = []
+
+        total_raw_score = 0
+        total_resized_score = 0
+        total_improvement_percentage = 0
+        total_images = 0
+
+        # Iterate through each class directory
+        for class_name in os.listdir(self.resized_images_path):
+            raw_class_directory = os.path.join(self.raw_images_path, class_name)
+            resized_class_directory = os.path.join(self.resized_images_path, class_name)
+
+            all_images = os.listdir(resized_class_directory)
+
+            # Iterate through each image in the class directory
+            for image_name in all_images:
+                try:
+                    raw_image_path = os.path.join(raw_class_directory, image_name)
+                    resized_image_path = os.path.join(resized_class_directory, image_name)
+
+                    raw_image = np.array(Image.open(raw_image_path))
+                    resized_image = np.array(Image.open(resized_image_path))
+
+                    # Check if the image is grayscale; if so, convert it to RGB
+                    if len(raw_image.shape) == 2:
+                        raw_image = color.gray2rgb(raw_image)
+                    if len(resized_image.shape) == 2:
+                        resized_image = color.gray2rgb(resized_image)
+
+                    # Calculate the BRISQUE scores for the raw and resized images
+                    raw_score = obj.score(raw_image)
+                    resized_score = obj.score(resized_image)
+
+                    # Don't count the image if the BRISQUE score is negative
+                    if raw_score < 0 or resized_score < 0:
+                        negative_brisque_scores.append((class_name, image_name))
+                        print(f"Skipping image {image_name} in class {class_name} because of negative BRISQUE score.")
+                        continue
+
+                    total_images += 1
+                    total_raw_score += raw_score
+                    total_resized_score += resized_score
+
+                    # Calculate the improvement percentage; if the resized score is lower than the raw score,
+                    # there was an improvement in quality
+                    improvement_percentage = ((raw_score - resized_score) / abs(resized_score) * 100) \
+                        if resized_score != 0 else 0
+
+                    total_improvement_percentage += improvement_percentage
+
+                    # Print the scores
+                    print(f"Class: {class_name}, Image: {image_name}, "
+                          f"Raw Score: {raw_score}, Resized Score: {resized_score}, "
+                          f"Improvement Percentage (Raw-Resized): {improvement_percentage}")
+
+                except Exception as e:
+                    print(f"Error processing image {image_name} in class {class_name}: {e}")
+
+        # Calculate the average scores for the entire dataset
+        average_raw_score = total_raw_score / total_images if total_images != 0 else 0
+        average_resized_score = total_resized_score / total_images if total_images != 0 else 0
+        average_improvement_percentage = total_improvement_percentage / total_images if total_images != 0 else 0
+
+        # Print the average scores
+        print(f"Average Raw Score: {average_raw_score}, Average Resized Score: {average_resized_score}, "
+              f"Average Improvement Percentage (Raw-Resized): {average_improvement_percentage}")
+
+        # Print the images with negative BRISQUE scores
+        print(f"Images with negative BRISQUE scores: {negative_brisque_scores}")
+
     def evaluate(self):
+        # return the evaluation results, best, worst and average enhanced images
         obj = BRISQUE(url=False)
         evaluation_results = []
+        negative_brisque_scores = []
+        enhanced_images_and_scores = []
+
+        best_enhanced_image = None
+        best_enhanced_score = float('-inf')
+        worst_enhanced_image = None
+        worst_enhanced_score = float('inf')
 
         total_raw_score = 0
         total_resized_score = 0
@@ -59,13 +139,24 @@ class BrisqueEvaluator:
 
                     # Don't count the image if the BRISQUE score is negative
                     if raw_score < 0 or resized_score < 0 or enhanced_score < 0:
+                        negative_brisque_scores.append((class_name, image_name))
                         print(f"Skipping image {image_name} in class {class_name} because of negative BRISQUE score.")
                         continue
+
+                    # Save the best and worst enhanced images
+                    if enhanced_score > best_enhanced_score:
+                        best_enhanced_score = enhanced_score
+                        best_enhanced_image = Image.open(enhanced_image_path)
+                    if enhanced_score < worst_enhanced_score:
+                        worst_enhanced_score = enhanced_score
+                        worst_enhanced_image = Image.open(enhanced_image_path)
 
                     total_images += 1
                     total_raw_score += raw_score
                     total_resized_score += resized_score
                     total_enhanced_score += enhanced_score
+
+                    enhanced_images_and_scores.append((enhanced_image, enhanced_score))
 
                     # Calculate the improvement percentage; if the enhanced score is lower than the raw score,
                     # there was an improvement in quality
@@ -104,6 +195,12 @@ class BrisqueEvaluator:
         average_improvement_percentage_overall = ((average_raw_score - average_enhanced_score) /
                                                   average_enhanced_score * 100) if average_enhanced_score != 0 else 0
 
+        # Calculate the average enhanced image
+        average_enhanced_image = min(enhanced_images_and_scores,
+                                     key=lambda x: abs(x[1] - average_enhanced_score))[0]
+        # Convert the image to a PIL Image
+        average_enhanced_image = Image.fromarray((average_enhanced_image * 255).astype(np.uint8))
+
         # Append the average scores to the evaluation results
         evaluation_results.append((
             'Average', 'NA',
@@ -119,7 +216,10 @@ class BrisqueEvaluator:
               f"Average Improvement Percentage (Resized-Enhanced): {average_improvement_percentage_enhanced}, "
               f"Average Improvement Percentage (Raw-Enhanced): {average_improvement_percentage_overall}")
 
-        return evaluation_results
+        # Print the images with negative BRISQUE scores
+        print(f"Images with negative BRISQUE scores: {negative_brisque_scores}")
+
+        return evaluation_results, best_enhanced_image, worst_enhanced_image, average_enhanced_image
 
 
 class EnhancementPipeline:
@@ -165,3 +265,4 @@ class EnhancementPipeline:
         brisque_evaluator = BrisqueEvaluator(self.raw_dataset_path, self.resized_images_path, self.enhanced_images_path)
 
         return brisque_evaluator.evaluate()
+        # return brisque_evaluator.evaluate_resized()

@@ -24,7 +24,7 @@ def _resize_image(image_path, output_path, min_size):
             new_width = int(width * (min_size / height))
 
         # resize the image
-        resized_image = image.resize((new_width, new_height), resample=Resampling.LANCZOS)
+        resized_image = image.resize((new_width, new_height), resample=Resampling.BOX)
 
         # save the resized image
         save_path = os.path.join(output_path, os.path.basename(image_path))
