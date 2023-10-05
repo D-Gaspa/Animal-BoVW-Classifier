@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 import seaborn as sns
+from pathlib import Path
 import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.svm import SVC
@@ -17,7 +18,6 @@ class BOVW:
         self.descriptor_list = []
         self.labels = np.array([])
         self.label_names = []
-        self.label_count = 0
         self.clf = SVC()
 
     def fit(self):
@@ -28,7 +28,7 @@ class BOVW:
         print("Starting feature extraction")
 
         # Iterate through each class folder
-        for class_name in os.listdir(self.data_path):
+        for class_idx, class_name in enumerate(os.listdir(self.data_path)):
             self.label_names.append(class_name)
             class_path = os.path.join(self.data_path, class_name)
 
@@ -44,13 +44,12 @@ class BOVW:
 
                 if des is not None:  # check if descriptors are extracted
                     self.descriptor_list.append(des)
-                    self.labels = np.append(self.labels, np.full(des.shape[0], self.label_count))
+                    self.labels = np.append(self.labels, np.full(des.shape[0], class_idx))
                     image_features.append(des)
-                    image_labels.append(self.label_count)
+                    image_labels.append(class_idx)
 
                     print(f"Extracted {des.shape[0]} descriptors from {img_name} in class {class_name}")
 
-            self.label_count += 1
 
         print("Feature extraction complete")
 
@@ -102,13 +101,13 @@ class BOVW:
         timestamp = now.strftime("%Y%m%d_%H%M%S")  # Format the timestamp
 
         # Save the confusion matrix plot with the timestamp in the filename
-        plt.savefig(f'../../results/classification_results/confusion_matrix_{timestamp}.png')
+        plt.savefig(f'{Path.cwd()}\\results\\classification_results\\confusion_matrix_{timestamp}.png')
         plt.show()
 
         print("Accuracy: ", accuracy_score(y_test, y_pred))
 
         # Save the classification report as a text file with the timestamp in the filename
-        with open(f'../../results/classification_results/classification_report_{timestamp}.txt', 'w') as f:
+        with open(f'{Path.cwd()}\\results\\classification_results\\classification_report_{timestamp}.txt', 'w') as f:
             f.write(report)
             f.write("\nBest Parameters: ")
             f.write(str(clf.best_params_))
@@ -116,7 +115,7 @@ class BOVW:
 
 if __name__ == "__main__":
     os.environ['LOKY_MAX_CPU_COUNT'] = '8'
-    base_data_dir = os.path.join('..', '..', 'data')
+    base_data_dir = f'{Path.cwd()}\\data'
     filtered_images_folder = os.path.join(base_data_dir, 'filtered_images')
 
     # bovw = BOVW(os.path.join(base_data_dir, 'resized_images'))
