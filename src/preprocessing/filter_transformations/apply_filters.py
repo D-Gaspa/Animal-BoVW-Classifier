@@ -1,12 +1,13 @@
 import os
 import cv2
-from filters import Filters
+from .filters import Filters
 
 
 class ApplyFilters:
     def __init__(self, input_folder, output_folder, filters):
         self.input_folder = input_folder
-        self.output_folder = os.path.join(output_folder, "-".join(filters))
+        #self.output_folder = os.path.join(output_folder, "-".join(filters))
+        self.output_folder = output_folder
         self.filters = filters
 
         if not os.path.exists(self.output_folder):
@@ -47,6 +48,7 @@ class ApplyFilters:
             for image_name in os.listdir(class_path):
                 image_path = os.path.join(class_path, image_name)
                 image = cv2.imread(image_path)
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
                 print(f"Applying filters to image {image_name} in class {class_folder}")
 
