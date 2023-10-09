@@ -1,6 +1,8 @@
 import os
 import cv2
 from .filters import Filters
+from PIL import Image
+import numpy as np
 
 
 class ApplyFilters:
@@ -20,7 +22,11 @@ class ApplyFilters:
             "clahe": Filters.clahe,
             "edge_enhancement": Filters.edge_enhancement,
             "noise_reduction": Filters.noise_reduction,
-            "sharpen": Filters.sharpen
+            "sharpen": Filters.sharpen,
+            "unsharp": Filters.unsharp,
+            "canny": Filters.canny,
+            "gabor": Filters.gabor,
+            "threshold": Filters.threshold
         }
 
         print("Applying filters")
@@ -40,7 +46,8 @@ class ApplyFilters:
             # Iterate over all the images in the class folder
             for image_name in os.listdir(class_path):
                 image_path = os.path.join(class_path, image_name)
-                image = cv2.imread(image_path)
+                image = Image.open(image_path)
+                image = np.array(image)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
                 print(f"Applying filters to image {image_name} in class {class_folder}")

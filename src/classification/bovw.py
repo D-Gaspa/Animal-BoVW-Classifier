@@ -6,20 +6,30 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.preprocessing import Normalizer, StandardScaler
+from sklearn.neural_network import MLPClassifier
+import tensorflow as tf
 
 
 class BOVW:
-    def __init__(self, data_path, num_clusters=50):
+    def __init__(self, data_path, num_clusters=500):
         self.data_path = data_path
         self.num_clusters = num_clusters
         self.descriptor_list = []
         self.labels = np.array([])
         self.label_names = []
         self.clf = SVC()
-        self.parameters = [{'kernel': ['linear', 'rbf', 'poly'], 'C': [0.1, 1, 1.1, 1.2], 'gamma': ['scale', 1, 0.1, 0.01, 0.001, 0.0013]}]
+        self.mlp = MLPClassifier()
+        self.knn = KNeighborsClassifier()
+        self.parameters = [{'kernel': ['linear', 'rbf', 'poly', 'sigmoid'], 'C': [0.1, 1, 1.1, 1.12,1.14, 1.15, 1.16, 1.2], 'gamma': ['scale', 1, 0.1, 0.01, 0.001, 0.0013], 'random_state': [35]}]
+        #self.parameters = [{'solver': ['lbfgs', 'sgd', 'adam'], 'activation': ['identity', 'logistic', 'tanh', 'relu'], 'random_state': [50], 'learning_rate_init':[0.001, 0.1, 1.5, 0.00015, 2.1]}]
+        #self.parameters = [{"n_neighbors":[5, 9, 8, 7, 3, 4, 10, 20, 30], "weights":['uniform', 'distance'], "n_jobs":[-1]}]
+        
+        
  
     def fit(self):
         orb = cv2.ORB.create()
@@ -75,6 +85,13 @@ class BOVW:
         x_train, x_test, y_train, y_test = train_test_split(
             image_histograms, image_labels, test_size=0.3, train_size= 0.7, random_state=35, shuffle= True, stratify= image_labels )
 
+        scaler = StandardScaler()
+        x_train = scaler.fit_transform(x_train)
+        x_test = scaler.fit_transform(x_test)
+        scaler = Normalizer()
+        x_train = scaler.fit_transform(x_train)
+        x_test = scaler.fit_transform(x_test)
+        
         # Hyperparameter tuning for SVM
         print("Performing Grid Search for Hyperparameter Tuning")
         grid_search = GridSearchCV(self.clf, self.parameters, n_jobs= -1)

@@ -49,7 +49,7 @@ def main():
                     file.close()
                 if os.path.exists(filtFPath) == False:
                     smallImgPath = f'{Path.cwd()}\\data\\small_images'
-                    filters_to_apply = ["histogram_equalization", "noise_reduction"]
+                    filters_to_apply = ["gabor"]
                     apply_filters = ApplyFilters(smallImgPath, filtered_path, filters_to_apply)
                     apply_filters.apply()
                     file = open(filtFPath, mode= 'w')

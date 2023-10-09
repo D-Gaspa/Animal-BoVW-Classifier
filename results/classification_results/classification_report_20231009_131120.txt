@@ -1,0 +1,13 @@
+              precision    recall  f1-score   support
+
+   Crocodile       0.44      0.50      0.47        30
+         Fox       0.69      0.37      0.48        30
+     Giraffe       0.57      0.53      0.55        30
+       Panda       0.69      0.67      0.68        30
+     Raccoon       0.42      0.60      0.49        30
+
+    accuracy                           0.53       150
+   macro avg       0.56      0.53      0.53       150
+weighted avg       0.56      0.53      0.53       150
+
+Best Parameters: {'C': 1.12, 'gamma': 1, 'kernel': 'rbf', 'random_state': 35}
