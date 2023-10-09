@@ -10,6 +10,7 @@ def main():
     loop = True
     verifyFPath = f'{Path.cwd()}\\docs\\.gitkeep'
     resFPath = f'{Path.cwd()}\\docs\\.smallImg'
+    filtFPath = f'{Path.cwd()}\\docs\\.filtImg'
 
     print(colored("Welcome to the Animal images enhancer & classifier", "white", attrs=['bold']))
 
@@ -46,10 +47,13 @@ def main():
                         smallResize.small_images(350)
                     file = open(resFPath, mode= 'w')
                     file.close()
-                smallImgPath = f'{Path.cwd()}\\data\\small_images'
-                filters_to_apply = ["histogram_equalization", "noise_reduction"]
-                apply_filters = ApplyFilters(smallImgPath, filtered_path, filters_to_apply)
-                apply_filters.apply()
+                if os.path.exists(filtFPath) == False:
+                    smallImgPath = f'{Path.cwd()}\\data\\small_images'
+                    filters_to_apply = ["histogram_equalization", "noise_reduction"]
+                    apply_filters = ApplyFilters(smallImgPath, filtered_path, filters_to_apply)
+                    apply_filters.apply()
+                    file = open(filtFPath, mode= 'w')
+                    file.close()
                 Train()
                 print(colored("\n\nThe image enhancing has been performed.", "light_green"))
         elif res == '3':
