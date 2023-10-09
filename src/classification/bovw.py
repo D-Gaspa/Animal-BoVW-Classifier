@@ -77,7 +77,7 @@ class BOVW:
 
         # Hyperparameter tuning for SVM
         print("Performing Grid Search for Hyperparameter Tuning")
-        grid_search = GridSearchCV(self.clf, self.parameters)
+        grid_search = GridSearchCV(self.clf, self.parameters, n_jobs= -1)
         print("Fitting the SVM")
         grid_search.fit(x_train, y_train)
         print("Best parameters found: ", grid_search.best_params_)
