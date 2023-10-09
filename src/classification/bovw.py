@@ -19,8 +19,8 @@ class BOVW:
         self.labels = np.array([])
         self.label_names = []
         self.clf = SVC()
-        self.parameters = [{'kernel': ['linear', 'rbf', 'poly', 'sigmoid', 'precomputed'], 'C': [0.1, 1, 10, 100, 1000], 'gamma': ['scale', 1, 0.1, 0.01, 0.001, 0.0001]}]
-
+        self.parameters = [{'kernel': ['linear', 'rbf', 'poly'], 'C': [0.1, 1, 1.1, 1.2], 'gamma': ['scale', 1, 0.1, 0.01, 0.001, 0.0013]}]
+ 
     def fit(self):
         orb = cv2.ORB.create()
         image_labels = []
@@ -101,21 +101,26 @@ class BOVW:
         timestamp = now.strftime("%Y%m%d_%H%M%S")  # Format the timestamp
 
         # Save the confusion matrix plot with the timestamp in the filename
-        plt.savefig(f'{Path.cwd()}\\results\\classification_results\\confusion_matrix_{timestamp}.png')
+        classResPath = f'{Path.cwd()}\\results\\classification_results'
+        if not os.path.exists(classResPath):
+            os.makedirs(classResPath)
+        plt.savefig(f'{classResPath}\\confusion_matrix_{timestamp}.png')
         plt.show()
 
         print("Accuracy: ", accuracy_score(y_test, y_pred))
 
         # Save the classification report as a text file with the timestamp in the filename
-        with open(f'{Path.cwd()}\\results\\classification_results\\classification_report_{timestamp}.txt', 'w') as f:
+        with open(f'{classResPath}\\classification_report_{timestamp}.txt', 'w') as f:
             f.write(report)
             f.write("\nBest Parameters: ")
             f.write(str(grid_search.best_params_))
 
-
-if __name__ == "__main__":
+def main():
     os.environ['LOKY_MAX_CPU_COUNT'] = '8'
     base_data_dir = f'{Path.cwd()}\\data'
     filtered_images_folder = os.path.join(base_data_dir, 'filtered_images')
-    bovw = BOVW(os.path.join(base_data_dir, 'resized_images'))
+    bovw = BOVW(os.path.join(base_data_dir, filtered_images_folder))
     bovw.fit()
+    
+if __name__ == "__main__":
+   main()

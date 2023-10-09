@@ -8,9 +8,9 @@ class Filters:
 
     @staticmethod
     def histogram_equalization(image):
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         equalized = cv2.equalizeHist(gray)
-        return cv2.cvtColor(equalized, cv2.COLOR_GRAY2BGR)
+        return cv2.cvtColor(equalized, cv2.COLOR_GRAY2RGB)
 
     @staticmethod
     def clahe(image):
