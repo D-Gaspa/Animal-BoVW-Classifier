@@ -38,7 +38,7 @@ class Filters:
     def canny(image):
        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
        edges = cv2.Canny(gray, 120, 250, L2gradient= True)
-       edges = cv2.Laplacian(image, cv2.CV_64F)
+       #edges = cv2.Laplacian(image, cv2.CV_64F)
        return edges
     
     @staticmethod

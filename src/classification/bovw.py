@@ -12,7 +12,6 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.preprocessing import Normalizer, StandardScaler
 from sklearn.neural_network import MLPClassifier
-import tensorflow as tf
 
 
 class BOVW:
@@ -71,7 +70,7 @@ class BOVW:
 
         # Perform k-means clustering
         print("Starting K-Means Clustering")
-        k_means = MiniBatchKMeans(n_clusters=self.num_clusters, random_state=0, n_init=3).fit(descriptors)
+        k_means = MiniBatchKMeans(n_clusters=self.num_clusters, random_state=0, n_init=16).fit(descriptors)
         print("K-Means Clustering complete")
 
         # Create histograms of visual words
