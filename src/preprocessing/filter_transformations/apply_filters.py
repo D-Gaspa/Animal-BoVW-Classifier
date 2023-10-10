@@ -26,7 +26,9 @@ class ApplyFilters:
             "unsharp": Filters.unsharp,
             "canny": Filters.canny,
             "gabor": Filters.gabor,
-            "threshold": Filters.threshold
+            "threshold": Filters.threshold,
+            "morphologicalGradent": Filters.morphologicalGradent,
+            "enhance": Filters.enhance
         }
 
         print("Applying filters")

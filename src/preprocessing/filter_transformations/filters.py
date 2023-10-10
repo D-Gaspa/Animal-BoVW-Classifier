@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from skimage.exposure import adjust_gamma, adjust_sigmoid
 
 class Filters:
     def __init__(self):
@@ -52,6 +53,21 @@ class Filters:
         gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         enhance = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
         cv2.THRESH_BINARY,11,2)
+        return enhance
+    
+    @staticmethod
+    def morphologicalGradent(image):
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        kernel = np.ones((3,3),np.uint8)
+        gradient = cv2.morphologyEx(gray, cv2.MORPH_CLOSE, kernel)
+        #dilate =  cv2.dilate(gray,kernel,iterations = 1)
+        return gradient 
+    
+    @staticmethod
+    def enhance(image):
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        enhance = adjust_gamma(gray, gamma=1.4, gain=1)
+        enhance = adjust_sigmoid(enhance, cutoff=0.3, gain=5)
         return enhance
     
     @staticmethod
