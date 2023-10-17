@@ -95,7 +95,7 @@ TODO
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your_username/Animal-BoVW-Classifier.git
+   git clone https://github.com/D-Gaspa/Animal-BoVW-Classifier.git
    ```
 
 2. Install the required packages:
