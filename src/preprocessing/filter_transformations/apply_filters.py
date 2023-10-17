@@ -3,6 +3,7 @@ import cv2
 from .filters import Filters
 from PIL import Image
 import numpy as np
+from rembg import remove
 
 
 class ApplyFilters:
@@ -28,7 +29,8 @@ class ApplyFilters:
             "gabor": Filters.gabor,
             "threshold": Filters.threshold,
             "morphologicalGradent": Filters.morphologicalGradent,
-            "enhance": Filters.enhance
+            "enhance": Filters.enhance,
+            "blur": Filters.blur
         }
 
         print("Applying filters")
@@ -49,6 +51,7 @@ class ApplyFilters:
             for image_name in os.listdir(class_path):
                 image_path = os.path.join(class_path, image_name)
                 image = Image.open(image_path)
+                image = remove(image)
                 image = np.array(image)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 

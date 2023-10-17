@@ -15,7 +15,7 @@ from sklearn.neural_network import MLPClassifier
 
 
 class BOVW:
-    def __init__(self, data_path, num_clusters=500):
+    def __init__(self, data_path, num_clusters=1000):
         self.data_path = data_path
         self.num_clusters = num_clusters
         self.descriptor_list = []
@@ -24,14 +24,14 @@ class BOVW:
         self.clf = SVC()
         self.mlp = MLPClassifier()
         self.knn = KNeighborsClassifier()
-        self.parameters = [{'kernel': ['linear', 'rbf', 'poly', 'sigmoid'], 'C': [0.1, 1, 1.1, 1.12,1.14, 1.15, 1.16, 1.2], 'gamma': ['scale', 1, 0.1, 0.01, 0.001, 0.0013], 'random_state': [35]}]
+        self.parameters = [{'kernel': ['linear', 'rbf', 'poly', 'sigmoid'], 'C': [0.1, 1, 10], 'gamma': ['scale', 1, 0.1, 0.01]}]
         #self.parameters = [{'solver': ['lbfgs', 'sgd', 'adam'], 'activation': ['identity', 'logistic', 'tanh', 'relu'], 'random_state': [50], 'learning_rate_init':[0.001, 0.1, 1.5, 0.00015, 2.1]}]
         #self.parameters = [{"n_neighbors":[5, 9, 8, 7, 3, 4, 10, 20, 30], "weights":['uniform', 'distance'], "n_jobs":[-1]}]
         
         
  
     def fit(self):
-        orb = cv2.ORB.create()
+        orb = cv2.SIFT.create()
         image_labels = []
         image_features = []
 
@@ -70,7 +70,7 @@ class BOVW:
 
         # Perform k-means clustering
         print("Starting K-Means Clustering")
-        k_means = MiniBatchKMeans(n_clusters=self.num_clusters, random_state=0, n_init=16).fit(descriptors)
+        k_means = MiniBatchKMeans(n_clusters=self.num_clusters, random_state=0, n_init=3).fit(descriptors)
         print("K-Means Clustering complete")
 
         # Create histograms of visual words
@@ -82,7 +82,7 @@ class BOVW:
 
         # Split into training and testing data
         x_train, x_test, y_train, y_test = train_test_split(
-            image_histograms, image_labels, test_size=0.3, train_size= 0.7, random_state=35, shuffle= True, stratify= image_labels )
+            image_histograms, image_labels, test_size=0.3, random_state=42, shuffle= True)
 
         scaler = StandardScaler()
         x_train = scaler.fit_transform(x_train)
@@ -93,7 +93,7 @@ class BOVW:
         
         # Hyperparameter tuning for SVM
         print("Performing Grid Search for Hyperparameter Tuning")
-        grid_search = GridSearchCV(self.clf, self.parameters, n_jobs= -1)
+        grid_search = GridSearchCV(self.clf, self.parameters, cv= 10, n_jobs= -1)
         print("Fitting the SVM")
         grid_search.fit(x_train, y_train)
         print("Best parameters found: ", grid_search.best_params_)

@@ -39,8 +39,13 @@ class Filters:
     def canny(image):
        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
        edges = cv2.Canny(gray, 120, 250, L2gradient= True)
-       #edges = cv2.Laplacian(image, cv2.CV_64F)
        return edges
+    
+    @staticmethod
+    def blur(image):
+        enhance = cv2.medianBlur(image, 5)
+        enhance = cv2.bilateralFilter(enhance, 9, 75, 75)
+        return enhance
     
     @staticmethod
     def unsharp(image):
