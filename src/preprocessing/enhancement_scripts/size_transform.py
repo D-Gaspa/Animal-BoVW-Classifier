@@ -19,7 +19,7 @@ def _resize_image(image_path, output_path, min_size):
             new_width = int(width * (min_size / height))
 
         # resize the image
-        resized_image = image.resize((new_width, new_height), resample=Resampling.LANCZOS)
+        resized_image = image.resize((new_width, new_height), resample=Resampling.BOX)
 
         # save the resized image
         save_path = os.path.join(output_path, os.path.basename(image_path))
@@ -43,7 +43,7 @@ def _small_image(image_path, output_path, size):
             new_height = size
             new_width = int(width * (size / height))
             
-        resized_image = cv.resize(image, (new_width, new_height), interpolation = cv.INTER_LANCZOS4)
+        resized_image = cv.resize(image, (new_width, new_height), interpolation = cv.INTER_NEAREST)
         save_path = os.path.join(output_path, os.path.basename(image_path))
         cv.imwrite(save_path, resized_image)
         print(f"Saving to: {save_path}")
