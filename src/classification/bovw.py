@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 
 
 class BOVW:
-    def __init__(self, data_path, num_clusters=50):
+    def __init__(self, data_path, num_clusters=1000):
         self.data_path = data_path
         self.num_clusters = num_clusters
         self.descriptor_list = []
@@ -79,7 +79,7 @@ class BOVW:
         parameters = {'kernel': ('linear', 'rbf'),
                       'C': [0.1, 1, 10],
                       'gamma': ['scale', 1, 0.1, 0.01]}
-        clf = GridSearchCV(self.clf, parameters, cv=5)
+        clf = GridSearchCV(self.clf, parameters, cv=10)
         print("Fitting the SVM")
         clf.fit(x_train, y_train)
         print("Best parameters found: ", clf.best_params_)
@@ -118,5 +118,7 @@ if __name__ == "__main__":
     os.environ['LOKY_MAX_CPU_COUNT'] = '8'
     base_data_dir = os.path.join('..', '..', 'data')
     filtered_images_folder = os.path.join(base_data_dir, 'filtered_images')
-    bovw = BOVW(os.path.join(base_data_dir, 'resized_images'))
+
+    # bovw = BOVW(os.path.join(base_data_dir, 'resized_images'))
+    bovw = BOVW(os.path.join(filtered_images_folder, 'unsharp_masking'))
     bovw.fit()
