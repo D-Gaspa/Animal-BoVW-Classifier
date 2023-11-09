@@ -1,14 +1,21 @@
 from termcolor import colored
-from preprocessing.enhancement_scripts.run_pipeline import enhancer as Enhancer
+from preprocessing.enhancement_scripts.run_pipeline import main as Enhancer
+from classification.bovw import main as Train
+from preprocessing.enhancement_scripts.size_transform import ImageEnhancer
+from preprocessing.filter_transformations.apply_filters import ApplyFilters
+from pathlib import Path
+import os
 
 def main():
     loop = True
-    enhance = False
+    verifyFPath = f'{Path.cwd()}\\docs\\.gitkeep'
+    resFPath = f'{Path.cwd()}\\docs\\.smallImg'
+    filtFPath = f'{Path.cwd()}\\docs\\.filtImg'
 
     print(colored("Welcome to the Animal images enhancer & classifier", "white", attrs=['bold']))
 
     while(loop):
-        if enhance == False:
+        if os.path.exists(verifyFPath) == False:
             print(colored("\nPlease select one of the following options:", "white"))
             print(colored("\n1.Enhance Image dataset", "light_green"))
             print(colored("\n2.Classify image dataset", "red"))
@@ -22,13 +29,33 @@ def main():
         res = input()
 
         if res == '1':
-            enhance = True
             Enhancer()
+            file = open(verifyFPath, mode= 'w')
+            file.close()
+            print(colored("\n\nThe image enhancing has been performed.", "light_green"))
         elif res == '2':
-            if enhance == False:
+            if os.path.exists(verifyFPath) == False:
                 print(colored("\nYou cannot classify images if they are not resized and enhanced before.", "red"))
             else:
-                print()
+                base_path = f'{Path.cwd()}\\data\\raw_dataset'
+                filtered_path = f'{Path.cwd()}\\data\\filtered_images'
+                if os.path.exists(resFPath) == False:
+                    for class_name in os.listdir(base_path):
+                        class_path = os.path.join(base_path, class_name)
+                        resized_class_path = os.path.join(f'{Path.cwd()}\\data\\small_images', class_name)
+                        smallResize = ImageEnhancer(class_path, resized_class_path)
+                        smallResize.small_images(350)
+                    file = open(resFPath, mode= 'w')
+                    file.close()
+                if os.path.exists(filtFPath) == False:
+                    smallImgPath = f'{Path.cwd()}\\data\\small_images'
+                    filters_to_apply = []
+                    apply_filters = ApplyFilters(smallImgPath, filtered_path, filters_to_apply)
+                    apply_filters.apply()
+                    file = open(filtFPath, mode= 'w')
+                    file.close()
+                Train()
+                print(colored("\n\nThe image enhancing has been performed.", "light_green"))
         elif res == '3':
             loop = False
             print(colored("\nExiting application...", "light_grey"))
