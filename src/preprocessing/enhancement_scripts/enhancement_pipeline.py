@@ -14,78 +14,6 @@ class BrisqueEvaluator:
         self.resized_images_path = resized_images_path
         self.enhanced_images_path = enhanced_images_path
 
-    def evaluate_resized(self):
-        obj = BRISQUE(url=False)
-        negative_brisque_scores = []
-
-        total_raw_score = 0
-        total_resized_score = 0
-        total_improvement_percentage = 0
-        total_images = 0
-
-        # Iterate through each class directory
-        for class_name in os.listdir(self.resized_images_path):
-            raw_class_directory = os.path.join(self.raw_images_path, class_name)
-            resized_class_directory = os.path.join(self.resized_images_path, class_name)
-
-            all_images = os.listdir(resized_class_directory)
-
-            # Iterate through each image in the class directory
-            for image_name in all_images:
-                try:
-                    raw_image_path = os.path.join(raw_class_directory, image_name)
-                    resized_image_path = os.path.join(resized_class_directory, image_name)
-
-                    raw_image = np.array(Image.open(raw_image_path))
-                    resized_image = np.array(Image.open(resized_image_path))
-
-                    # Check if the image is grayscale; if so, convert it to RGB
-                    if len(raw_image.shape) == 2:
-                        raw_image = color.gray2rgb(raw_image)
-                    if len(resized_image.shape) == 2:
-                        resized_image = color.gray2rgb(resized_image)
-
-                    # Calculate the BRISQUE scores for the raw and resized images
-                    raw_score = obj.score(raw_image)
-                    resized_score = obj.score(resized_image)
-
-                    # Don't count the image if the BRISQUE score is negative
-                    if raw_score < 0 or resized_score < 0:
-                        negative_brisque_scores.append((class_name, image_name))
-                        print(f"Skipping image {image_name} in class {class_name} because of negative BRISQUE score.")
-                        continue
-
-                    total_images += 1
-                    total_raw_score += raw_score
-                    total_resized_score += resized_score
-
-                    # Calculate the improvement percentage; if the resized score is lower than the raw score,
-                    # there was an improvement in quality
-                    improvement_percentage = ((raw_score - resized_score) / abs(resized_score) * 100) \
-                        if resized_score != 0 else 0
-
-                    total_improvement_percentage += improvement_percentage
-
-                    # Print the scores
-                    print(f"Class: {class_name}, Image: {image_name}, "
-                          f"Raw Score: {raw_score}, Resized Score: {resized_score}, "
-                          f"Improvement Percentage (Raw-Resized): {improvement_percentage}")
-
-                except Exception as e:
-                    print(f"Error processing image {image_name} in class {class_name}: {e}")
-
-        # Calculate the average scores for the entire dataset
-        average_raw_score = total_raw_score / total_images if total_images != 0 else 0
-        average_resized_score = total_resized_score / total_images if total_images != 0 else 0
-        average_improvement_percentage = total_improvement_percentage / total_images if total_images != 0 else 0
-
-        # Print the average scores
-        print(f"Average Raw Score: {average_raw_score}, Average Resized Score: {average_resized_score}, "
-              f"Average Improvement Percentage (Raw-Resized): {average_improvement_percentage}")
-
-        # Print the images with negative BRISQUE scores
-        print(f"Images with negative BRISQUE scores: {negative_brisque_scores}")
-
     def evaluate(self):
         # return the evaluation results, best, worst and average enhanced images
         obj = BRISQUE(url=False)
@@ -110,8 +38,8 @@ class BrisqueEvaluator:
             enhanced_class_directory = os.path.join(self.enhanced_images_path, class_name)
 
             all_images = os.listdir(enhanced_class_directory)
-            # selected_images = random.sample(all_images, 10)  # Selecting 10 images from each class
-            selected_images = all_images
+            selected_images = random.sample(all_images, 10)  # Selecting 10 images from each class
+            # selected_images = all_images
 
             # Iterate through each image in the class directory
             for image_name in selected_images:
@@ -244,7 +172,7 @@ class EnhancementPipeline:
             os.makedirs(resized_class_path, exist_ok=True)  # Creating class directory in resized_images
 
             enhancer = ImageEnhancer(class_path, resized_class_path)
-            enhancer.resize_images(1000)
+            enhancer.resize_images(500)
 
         print("Images resized successfully.")
 
@@ -265,4 +193,3 @@ class EnhancementPipeline:
         brisque_evaluator = BrisqueEvaluator(self.raw_dataset_path, self.resized_images_path, self.enhanced_images_path)
 
         return brisque_evaluator.evaluate()
-        # return brisque_evaluator.evaluate_resized()

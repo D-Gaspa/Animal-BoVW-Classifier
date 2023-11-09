@@ -9,13 +9,6 @@ def _resize_image(image_path, output_path, min_size):
         image = Image.open(image_path)
         width, height = image.size
 
-        # check if the image is already bigger than the minimum size
-        if width > min_size and height > min_size:
-            save_path = os.path.join(output_path, os.path.basename(image_path))
-            image.save(save_path)
-            print(f"Saving to: {save_path}")
-            return
-
         if width < height:
             new_width = min_size
             new_height = int(height * (min_size / width))

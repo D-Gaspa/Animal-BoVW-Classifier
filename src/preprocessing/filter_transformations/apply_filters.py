@@ -19,7 +19,14 @@ class ApplyFilters:
             "clahe": Filters.clahe,
             "edge_enhancement": Filters.edge_enhancement,
             "noise_reduction": Filters.noise_reduction,
-            "sharpen": Filters.sharpen
+            "sharpen": Filters.sharpen,
+            "edge_detection": Filters.edge_detection,
+            "color_filtering": Filters.color_filtering,
+            "adaptive_thresholding": Filters.adaptive_thresholding,
+            "gabor": Filters.gabor,
+            "background_removal": Filters.background_removal,
+            "canny_edge_detection": Filters.canny_edge_detection,
+            "unsharp_masking": Filters.unsharp_masking
         }
 
         print("Applying filters")
@@ -56,10 +63,12 @@ class ApplyFilters:
 if __name__ == "__main__":
     base_data_dir = os.path.join('..', '..', '..', 'data')
     enhanced_images_folder = os.path.join(base_data_dir, 'enhanced_images')
+    resized_images_folder = os.path.join(base_data_dir, 'resized_images')
     filtered_images_folder = os.path.join(base_data_dir, 'filtered_images')
+    background_removed_images_folder = os.path.join(filtered_images_folder, 'background_removal')
 
     # Specify the filters and their order in this list
-    filters_to_apply = ["histogram_equalization", "noise_reduction"]
+    filters_to_apply = ["unsharp_masking"]
 
-    apply_filters = ApplyFilters(enhanced_images_folder, filtered_images_folder, filters_to_apply)
+    apply_filters = ApplyFilters(background_removed_images_folder, filtered_images_folder, filters_to_apply)
     apply_filters.apply()
