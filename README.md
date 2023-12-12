@@ -1,126 +1,44 @@
 # Animal Image Classification Using BoVW Technique
 
-This repository focuses on the classification of animal images by utilizing the Bag-of-Visual-Words (BoVW) technique. The project incorporates a multi-stage preprocessing pipeline, which includes image enhancement and application of various filters. The BRISQUE algorithm is used to assess the quality of processed images.
+This repository showcases a project focused on classifying animal images using the Bag-of-Visual-Words (BoVW) technique. It incorporates a multi-stage preprocessing pipeline for image enhancement and applies various filters. The processed images' quality is assessed using the BRISQUE algorithm.
 
 ## Table of Contents
 - [Project Overview](#project-overview)
-- [Directory Structure](#directory-structure)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Usage](#usage)
 - [Results](#results)
-- [Contributors](#contributors)
 - [Acknowledgements](#acknowledgements)
+- [Contributors](#contributors)
 
 ## Project Overview
 
-- **Objective:** Classify animal images using the BoVW technique.
-- **Dataset:** (TODO - Include details about the dataset we're using, or a link to the source).
-- **Preprocessing:** Image enhancement for improved visualization, application of various filters to optimize classification accuracy.
-- **Assessment:** Employ the [BRISQUE algorithm](https://github.com/rehanguha/brisque) to evaluate 50 random images for enhancement quality.
+### Objective and Goals
+Our aim was to explore image enhancement and classification techniques:
+- Improving image quality through resizing and filtering to achieve better BRISQUE scores.
+- Employing the BoVW technique to preprocess and summarize a dataset comprising 500 images across five animal categories: Crocodile, Fox, Giraffe, Panda, and Raccoon.
 
-## Directory Structure
-```plaintext
-|-- Animal-BoVW-Classifier
-    |-- README.md
-    |-- LICENSE
-    |-- .gitignore
-    |
-    |-- src
-    |   |-- preprocessing
-    |   |   |-- enhancement_scripts
-    |   |   |   |-- size_transform.py
-    |   |   |   |-- quality_improve.py
-    |   |   |
-    |   |   |-- filter_transformations
-    |   |       |-- filter1.py
-    |   |       |-- filter2.py
-    |   |       |-- ...
-    |   |
-    |   |-- classification
-    |   |   |-- bovw.py
-    |   |   |-- feature_extraction.py
-    |   |
-    |   |-- utilities
-    |       |-- utils.py
-    |
-    |-- data
-    |   |-- raw_dataset
-    |   |   |-- class1
-    |   |   |-- class2
-    |   |   |-- ...
-    |   |
-    |   |-- enhanced_images
-    |   |   |-- class1
-    |   |   |-- class2
-    |   |   |-- ...
-    |   |
-    |   |-- filtered_images
-    |       |-- filter1
-    |       |   |-- class1
-    |       |   |-- class2
-    |       |   |-- ...
-    |       |
-    |       |-- filter2
-    |       |-- ...
-    |
-    |-- results
-    |   |-- brisque_scores
-    |   |   |-- brisque_evaluation.txt
-    |   |
-    |   |-- visualization_examples
-    |   |   |-- best_image.jpg
-    |   |   |-- average_image.jpg
-    |   |   |-- worst_image.jpg
-    |   |
-    |   |-- classification_results
-    |       |-- results.txt
-    |
-    |-- docs
-        |-- project_report.pdf
-        |-- ablation_study.md
-        |-- ...
-```
+### Enhancement
+Resizing images for uniformity, applying unsharp masking, and filters for sharpness and brightness improvement were key steps. Gamma and sigmoid corrections further bolstered visual clarity. The BRISQUE score provided a quantitative assessment of these enhancements.
 
-## Getting Started
+### Filtering
+We explored various filters including Rembg for background removal, and others like Histogram Equalization, Gabor Filter, Canny Edge Detector, and Unsharp Mask Filter for dataset refinement.
 
-### Prerequisites
-TODO 
-- Software/Tool 1 (e.g., Python 3.x)
-- Software/Tool 2 (e.g., OpenCV)
-- ...
+### Ablation Study and Classification
+The ablation study tested the impact of different filter combinations on the classification accuracy. Below is a visual representation of the study's results:
 
-### Installation
+![Ablation Study Results](results/filter_combination_accuracies.png)
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/D-Gaspa/Animal-BoVW-Classifier.git
-   ```
+This study provided insights into how each filtering technique influenced the model's performance, guiding us in optimizing the preprocessing pipeline.
+For classification, SIFT was used for feature extraction, Mini-Batch K-Means for clustering, and BoVW for image representation. SVC, optimized via GridSearchCV, was our classifier of choice.
 
-2. Install the required packages:
-   ```
-   pip install -r requirements.txt
-   ```
-
-(TODO - Adjust these steps later.)
-
-## Usage
-
-TODO - Briefly explain how to run the scripts or use the project, e.g.,
-
-```
-python src/preprocessing/enhancement_scripts/size_transform.py --input data/raw_dataset --output data/enhanced_images
-```
-
-## Results
-
-For detailed results and visualization examples, refer to the `results` directory.
-
-## Contributors
-
-- Diego Gasparis ([@D-Gaspa](https://github.com/D-Gaspa))
-- Mario Sánchez ([@MegaChestercat](https://github.com/MegaChestercat))
+### Results
+The project achieved an impressive 0.84 accuracy score, highlighting the effectiveness of our preprocessing and classification methods.
 
 ## Acknowledgements
-- TODO
+This project was made possible by the following datasets:
+- [Animal Image Dataset (90 Different Animals)](https://www.kaggle.com/datasets/iamsouravbanerjee/animal-image-dataset-90-different-animals) by S. Banerjee.
+- [Animals Detection Images Dataset](https://www.kaggle.com/datasets/antoreepjana/animals-detection-images-dataset) from Kaggle.
+
+We extend our gratitude to the dataset creators and Kaggle community for providing these invaluable resources.
+
+## Contributors
+- Diego Gasparis ([@D-Gaspa](https://github.com/D-Gaspa))
+- Mario Sánchez ([@MegaChestercat](https://github.com/MegaChestercat))
