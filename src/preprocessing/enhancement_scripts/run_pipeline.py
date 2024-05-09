@@ -1,23 +1,23 @@
-import os
 import csv
-from pathlib import Path
+import os
 from datetime import datetime
-from .enhancement_pipeline import EnhancementPipeline
+from pathlib import Path
+
+from enhancement_pipeline import EnhancementPipeline
 
 
 def main():
     # Execute the Enhancement Pipeline
-    '''
-    base_data_dir = os.path.join('..', '..', '..', 'data')
-    pipeline = EnhancementPipeline(os.path.join(base_data_dir, 'raw_dataset'),
-                                   os.path.join(base_data_dir, 'resized_images'),
-                                   os.path.join(base_data_dir, 'enhanced_images'))
-    '''
+
+    # base_data_dir = os.path.join('..', '..', '..', 'data')
+    # pipeline = EnhancementPipeline(os.path.join(base_data_dir, 'raw_dataset'),
+    #                                os.path.join(base_data_dir, 'resized_images'),
+    #                                os.path.join(base_data_dir, 'enhanced_images'))
+
     pipeline = EnhancementPipeline(os.path.join(f'{Path.cwd()}\\data\\raw_dataset'),
                                    os.path.join(f'{Path.cwd()}\\data\\resized_images'),
                                    os.path.join(f'{Path.cwd()}\\data\\enhanced_images'))
-    
-    
+
     evaluation_results, best_enhanced_image, worst_enhanced_image, average_enhanced_image = pipeline.execute()
 
     # Create a timestamped CSV file to store the results
@@ -30,12 +30,13 @@ def main():
     with open(results_file, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['Class Name', 'Image Name', 'Raw BRISQUE Score', 'Resized BRISQUE Score'
-                         'Enhanced BRISQUE Score', 'Improvement Percentage (Raw-Resized)',
+                                                                          'Enhanced BRISQUE Score',
+                         'Improvement Percentage (Raw-Resized)',
                          'Improvement Percentage (Resized-Enhanced)', 'Improvement Percentage (Raw-Enhanced)'])
         for result in evaluation_results:
             writer.writerow(result)
 
-    # Save the best, worst and average enhanced images to the visualization_examples folder in the results folder
+    # Save the best, worst and averagely enhanced images to the visualization_examples folder in the results folder
     visualization_examples_folder = os.path.join('..', '..', '..', 'results', 'visualization_examples')
     os.makedirs(visualization_examples_folder, exist_ok=True)
     best_enhanced_image.save(os.path.join(visualization_examples_folder, f'best_enhanced_image_{timestamp}.jpg'))

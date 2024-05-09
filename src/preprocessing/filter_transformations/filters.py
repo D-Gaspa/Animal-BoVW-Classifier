@@ -73,7 +73,7 @@ class Filters:
             kern /= 1.0 * kern.sum()  # Brightness normalization
             filters.append(kern)
         new_image = np.zeros_like(image)
-        depth = -1  # remain depth same as original image
+        depth = -1  # remain depth same as the original image
 
         for kern in filters:  # Loop through the kernels in our GaborFilter
             image_filter = cv2.filter2D(image, depth, kern)  # Apply filter to image
